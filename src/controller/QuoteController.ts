@@ -1,7 +1,11 @@
 import { Handler, NextFunction, Request, Response } from 'express';
 import { Quote } from '../entity/Quote';
 
-export const getQuotes: Handler = async (req: Request, res: Response, next: NextFunction) => {
+export const getQuotes: Handler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const quotes = await Quote.find();
     return res.status(200).json({ message: 'found', quotes });
@@ -10,7 +14,11 @@ export const getQuotes: Handler = async (req: Request, res: Response, next: Next
   }
 };
 
-export const getQuote: Handler = async (req: Request, res: Response, next: NextFunction) => {
+export const getQuote: Handler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = req.params.id;
     const quote = await Quote.findOne(id);
@@ -23,11 +31,17 @@ export const getQuote: Handler = async (req: Request, res: Response, next: NextF
   }
 };
 
-export const createQuote: Handler = async (req: Request, res: Response, next: NextFunction) => {
+export const createQuote: Handler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { content, authorName } = req.body;
     if (typeof content !== 'string' || typeof authorName !== 'string') {
-      return res.status(400).json({ message: 'content and author name must be strings' });
+      return res
+        .status(400)
+        .json({ message: 'content and author name must be strings' });
     }
     const quote = new Quote();
     quote.content = content;
@@ -39,12 +53,18 @@ export const createQuote: Handler = async (req: Request, res: Response, next: Ne
   }
 };
 
-export const editQuote: Handler = async (req: Request, res: Response, next: NextFunction) => {
+export const editQuote: Handler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = req.params.id;
     const { content, authorName } = req.body;
     if (typeof content !== 'string' || typeof authorName !== 'string') {
-      return res.status(400).json({ message: 'content and author name must be strings' });
+      return res.status(400).json({
+        message: 'content and authorName are required and must be strings',
+      });
     }
 
     const quote = await Quote.findOne(id);
@@ -62,7 +82,11 @@ export const editQuote: Handler = async (req: Request, res: Response, next: Next
   }
 };
 
-export const deleteQuote: Handler = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteQuote: Handler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = req.params.id;
     const quote = await Quote.findOne(id);
@@ -70,7 +94,7 @@ export const deleteQuote: Handler = async (req: Request, res: Response, next: Ne
       return res.status(404).json({ message: 'not found' });
     }
     await Quote.delete(id);
-    return res.status(204).json({ message: 'deleted' });
+    return res.sendStatus(204);
   } catch (err) {
     return next(err);
   }

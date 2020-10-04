@@ -20,16 +20,40 @@ function getValueOrExit(key: string): string {
   }
   return maybeValue;
 }
+
+type Environment = 'production' | 'development' | 'test';
 interface Config {
-  environment: 'production' | 'development';
+  environment: Environment;
   port: string;
   databaseUrl: string;
 }
 
+let environment: Environment;
+let databaseUrl: string;
+
+switch (process.env.NODE_ENV) {
+  case 'production':
+    environment = 'production';
+    databaseUrl = getValueOrExit('PROD_DATABASE_URL');
+    break;
+  case 'test':
+    environment = 'test';
+    databaseUrl = getValueOrExit('TEST_DATABASE_URL');
+    break;
+  default:
+    environment = 'development';
+    databaseUrl = getValueOrExit('DEV_DATABASE_URL');
+    break;
+}
+
+const port = getValueOrExit('PORT');
+
 const config: Config = {
-  environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-  port: getValueOrExit('PORT'),
-  databaseUrl: getValueOrExit('DATABASE_URL'),
+  environment,
+  port,
+  databaseUrl,
 };
+
+console.log('Loaded configuration', config);
 
 export default config;
