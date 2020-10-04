@@ -54,6 +54,4 @@ const config: Config = {
   databaseUrl,
 };
 
-console.log('Loaded configuration', config);
-
 export default config;
