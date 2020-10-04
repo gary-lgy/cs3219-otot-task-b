@@ -1,12 +1,19 @@
 import dotenv from 'dotenv';
 
-// Load the values from the environment
-const { error } = dotenv.config();
-if (error) {
-  console.error(`Failed to load environment variables: ${error}`);
-  process.exit(1);
-} else {
-  console.debug('Loaded environment variables from .env');
+type Environment = 'production' | 'development' | 'test';
+const environment: Environment =
+  process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test'
+    ? process.env.NODE_ENV
+    : 'development';
+
+// For development, load the values from .env
+if (environment === 'development') {
+  const { error } = dotenv.config();
+  if (error) {
+    throw new Error(`Failed to load environment variables: ${error}`);
+  } else {
+    console.debug('Loaded environment variables from .env');
+  }
 }
 
 // Put the values in a nicely structured object.
@@ -15,33 +22,27 @@ if (error) {
 function getValueOrExit(key: string): string {
   const maybeValue = process.env[key];
   if (maybeValue === undefined) {
-    console.error(`Missing required config variable '${key}'`);
-    process.exit(1);
+    throw new Error(`Missing required config variable '${key}'`);
   }
   return maybeValue;
 }
 
-type Environment = 'production' | 'development' | 'test';
 interface Config {
   environment: Environment;
   port: string;
   databaseUrl: string;
 }
 
-let environment: Environment;
 let databaseUrl: string;
 
-switch (process.env.NODE_ENV) {
+switch (environment) {
   case 'production':
-    environment = 'production';
     databaseUrl = getValueOrExit('PROD_DATABASE_URL');
     break;
   case 'test':
-    environment = 'test';
     databaseUrl = getValueOrExit('TEST_DATABASE_URL');
     break;
   default:
-    environment = 'development';
     databaseUrl = getValueOrExit('DEV_DATABASE_URL');
     break;
 }
