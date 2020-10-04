@@ -29,7 +29,7 @@ function getValueOrExit(key: string): string {
 
 interface Config {
   environment: Environment;
-  port: string;
+  port?: string;
   databaseUrl: string;
 }
 
@@ -47,7 +47,7 @@ switch (environment) {
     break;
 }
 
-const port = getValueOrExit('PORT');
+const port = environment === 'development' ? getValueOrExit('PORT') : undefined;
 
 const config: Config = {
   environment,
