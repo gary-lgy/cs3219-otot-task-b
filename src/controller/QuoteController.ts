@@ -39,9 +39,9 @@ export const createQuote: Handler = async (
   try {
     const { content, authorName } = req.body;
     if (typeof content !== 'string' || typeof authorName !== 'string') {
-      return res
-        .status(400)
-        .json({ message: 'content and author name must be strings' });
+      return res.status(400).json({
+        message: 'content and authorName are required and must be strings',
+      });
     }
     const quote = new Quote();
     quote.content = content;

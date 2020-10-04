@@ -83,32 +83,61 @@ describe('quote API', () => {
   });
 
   describe('POST /quotes', () => {
-    const quote = {
-      content: faker.lorem.sentence(),
-      authorName: faker.name.findName(),
-    };
-
-    const sendCreateRequest = async () => {
+    beforeEach(async () => {
       // Add 2 other quotes into the DB first
       await addRandomQuotes(2);
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const sendCreateRequest = async (quote: object) => {
       return supertest(app).post('/api/v1/quotes').send(quote);
     };
 
-    test('should return the created quote', async () => {
-      const response = await sendCreateRequest();
-      expect(response.status).toStrictEqual(201);
-      expect(response.body.message).toStrictEqual('created');
-      expect(response.body.quote.id).toStrictEqual(3);
-      expect(response.body.quote.content).toStrictEqual(quote.content);
-      expect(response.body.quote.authorName).toStrictEqual(quote.authorName);
+    describe('with valid request body', () => {
+      const validQuote = {
+        content: faker.lorem.sentence(),
+        authorName: faker.name.findName(),
+      };
+
+      test('should return the created quote', async () => {
+        const response = await sendCreateRequest(validQuote);
+        expect(response.status).toStrictEqual(201);
+        expect(response.body.message).toStrictEqual('created');
+        expect(response.body.quote.id).toStrictEqual(3);
+        expect(response.body.quote.content).toStrictEqual(validQuote.content);
+        expect(response.body.quote.authorName).toStrictEqual(
+          validQuote.authorName,
+        );
+      });
+
+      test('should create a quote', async () => {
+        await sendCreateRequest(validQuote);
+        const dbQuote = await Quote.findOne(3);
+        expect(dbQuote).not.toBeUndefined();
+        expect(dbQuote?.content).toStrictEqual(validQuote.content);
+        expect(dbQuote?.authorName).toStrictEqual(validQuote.authorName);
+      });
     });
 
-    test('should create a quote', async () => {
-      await sendCreateRequest();
-      const dbQuote = await Quote.findOne(3);
-      expect(dbQuote).not.toBeUndefined();
-      expect(dbQuote?.content).toStrictEqual(quote.content);
-      expect(dbQuote?.authorName).toStrictEqual(quote.authorName);
+    describe('with invalid request body', () => {
+      const invalidQuote = {
+        someKey: 'someValue',
+        someOtherKey: 12,
+      };
+      test('should not create the quote', async () => {
+        await sendCreateRequest(invalidQuote);
+        const [, count] = await Quote.findAndCount();
+        expect(count).toStrictEqual(2);
+      });
+
+      test('should return 400', async () => {
+        const response = await sendCreateRequest(invalidQuote);
+        expect(response.status).toStrictEqual(400);
+        expect(response.body.message).toStrictEqual(
+          'content and authorName are required and must be strings',
+        );
+        expect(response.body.quote).toBeUndefined();
+      });
     });
   });
 
