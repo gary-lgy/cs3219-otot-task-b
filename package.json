@@ -30,6 +30,7 @@
     "jest": "^26.4.2",
     "nodemon": "^2.0.4",
     "prettier": "^2.1.2",
+    "serverless": "^2.4.0",
     "supertest": "^5.0.0",
     "ts-jest": "^26.4.1",
     "typescript": "^3.9.7"
