@@ -6,6 +6,7 @@ provider:
   runtime: nodejs12.x
   stage: production
   memorySize: 512
+  profile: cs3219-otot-task-b
   environment:
     NODE_ENV: production
 

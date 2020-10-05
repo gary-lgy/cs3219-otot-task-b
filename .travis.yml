@@ -15,6 +15,9 @@ before_script:
 after_success:
   - npm run coverage
 
+before_deploy:
+  - serverless config credentials --provider aws --profile cs3219-otot-task-b --key "$AWS_ACCESS_KEY_ID" --secret "$AWS_SECRET_ACCESS_KEY"
+
 deploy:
   provider: script
   script: npm run deploy
