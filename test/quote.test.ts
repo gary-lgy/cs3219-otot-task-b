@@ -44,10 +44,23 @@ describe('quote API', () => {
     });
 
     describe('when there are quotes', () => {
-      test('should return all quotes', async () => {
-        const expectedQuotes = (await addRandomQuotes(10)).map(
-          convertQuoteToObject,
-        );
+      test('should return all quotes in reverse update time', async () => {
+        const randomQuotes = await addRandomQuotes(10);
+        // Sort in reverse updated order
+        randomQuotes.sort((q1, q2) => {
+          if (!q1.updatedAt || !q2.updatedAt) {
+            return 0;
+          }
+          if (q1.updatedAt > q2.updatedAt) {
+            return -1;
+          }
+          if (q1.updatedAt === q2.updatedAt) {
+            return 0;
+          } else {
+            return 1;
+          }
+        });
+        const expectedQuotes = randomQuotes.map(convertQuoteToObject);
         const response = await supertest(app).get('/api/v1/quotes');
         expect(response.status).toStrictEqual(200);
         expect(response.body.message).toStrictEqual('found');
