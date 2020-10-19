@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import 'reflect-metadata';
@@ -7,7 +8,10 @@ import config from './init/config';
 
 // create express app
 const app = express();
+
 app.use(bodyParser.json());
+app.use(cors());
+
 if (config.environment === 'production') {
   app.use(morgan('combined'));
 } else if (config.environment === 'development') {
