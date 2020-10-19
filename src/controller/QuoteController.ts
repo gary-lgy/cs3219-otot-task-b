@@ -7,7 +7,7 @@ export const getQuotes: Handler = async (
   next: NextFunction,
 ) => {
   try {
-    const quotes = await Quote.find();
+    const quotes = await Quote.find({ order: { updatedAt: 'DESC' } });
     return res.status(200).json({ message: 'found', quotes });
   } catch (error) {
     return next(error);
