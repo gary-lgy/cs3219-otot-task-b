@@ -3,6 +3,7 @@ import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import 'reflect-metadata';
+import * as debugController from './controller/DebugController';
 import * as quoteController from './controller/QuoteController';
 import config from './init/config';
 
@@ -32,6 +33,10 @@ quoteRouter.get('/:id', quoteController.getQuote);
 quoteRouter.post('/', quoteController.createQuote);
 quoteRouter.put('/:id', quoteController.editQuote);
 quoteRouter.delete('/:id', quoteController.deleteQuote);
+
+const debugRouter = express.Router();
+apiV1Router.use('/debug', debugRouter);
+debugRouter.post('/', debugController.createSampleQuotes);
 
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

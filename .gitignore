@@ -9,3 +9,5 @@ temp/
 .serverless/
 .env
 coverage/
+
+requests.http

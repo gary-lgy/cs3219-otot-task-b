@@ -45,7 +45,7 @@
     "lint": "eslint src",
     "check": "npm run typecheck && npm run lint",
     "fix": "run run tc && eslint src --fix",
-    "dev": "nodemon --watch src --ext ts --exec \"tsc --incremental && npm run serve\"",
+    "dev": "nodemon --watch src --ext ts --exec \"npm run clean && npm run build && npm run serve\"",
     "watch-test": "jest --watch",
     "test": "jest --coverage",
     "coverage": "coveralls < coverage/lcov.info",
